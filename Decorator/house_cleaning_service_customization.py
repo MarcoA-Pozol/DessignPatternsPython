@@ -12,12 +12,13 @@ class CleaningService():
 # Concrete Component
 class HouseCleaningService(CleaningService):
     _service_cost = 20.0
+    _description = 'Basic and general house cleaning. '
 
     def clean(self) -> str:
         return f'\n- Cleaning House $ {self._service_cost}'
 
     def get_description(self) -> str:
-        return 'Basic and general house cleaning'
+        return self._description
 
     def get_cost(self) -> float:
         return self._service_cost
@@ -45,30 +46,33 @@ class CleaningServiceDecorator(CleaningService):
 # Concrete Decorators (Cleaning Services)
 class WindowCleaningService(CleaningServiceDecorator):
     _service_cost = 6.0
+    _description = 'Windows cleaning. '
 
     def clean(self) -> str:
         return f'{self._cleaning_service.clean()}\n- Cleaning Windows $ {self._service_cost}'
     
     def get_description(self) -> str:
-        return f"{self._cleaning_service.get_description()}, windows cleaned"
+        return f"{self._cleaning_service.get_description()}{self._description}"
 
     def get_cost(self) -> float:
         return self._cleaning_service.get_cost() + self._service_cost
 
 class BackyardCleaningService(CleaningServiceDecorator):
     _service_cost = 8.0
+    _description = 'Backyard cleaning. '
 
     def clean(self) -> str:
         return f'{self._cleaning_service.clean()}\n- Cleaning Backyard $ {self._service_cost}'
     
     def get_description(self) -> str:
-        return f"{self._cleaning_service.get_description()}, backyard cleaned"
+        return f"{self._cleaning_service.get_description()}{self._description}"
 
     def get_cost(self) -> float:
         return self._cleaning_service.get_cost() + self._service_cost
     
 # Client Code
-def client_code(cleaning_service: CleaningService) -> None:
+def client_code(client_request: str, cleaning_service: CleaningService) -> None:
+    print(F'Client: {client_request}')
     print(f"Services: {cleaning_service.clean()}")
     print(f"Description: {cleaning_service.get_description()}")
     print(f"Total cost: ${cleaning_service.get_cost()}")
@@ -76,12 +80,13 @@ def client_code(cleaning_service: CleaningService) -> None:
 
 if __name__ == "__main__":
     simple = HouseCleaningService()
-    print("Client: Only a general cleaning please...")
-    client_code(simple)
+    client_code(client_request='Only a general cleaning please...', cleaning_service=simple)
 
+    house_cleaning = HouseCleaningService()
+    windows_cleaning = WindowCleaningService(house_cleaning)
+    backyard_cleaning = BackyardCleaningService(windows_cleaning)
+    client_code(client_request='Clean house, windows and do something with my backyard please...', cleaning_service=backyard_cleaning)
 
-    simple = HouseCleaningService()
-    decorator1 = WindowCleaningService(simple)
-    decorator2 = BackyardCleaningService(decorator1)
-    print("Client: Clean house, windows and do something with my backyard please...")
-    client_code(decorator2)
+    clean_house = HouseCleaningService()
+    clean_windows = WindowCleaningService(house_cleaning)
+    client_code(client_request='I only need my house ordered and swanky, make windows look better please.', cleaning_service=clean_windows)
