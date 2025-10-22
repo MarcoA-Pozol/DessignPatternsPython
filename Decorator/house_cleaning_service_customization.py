@@ -72,6 +72,19 @@ class BackyardCleaningService(CleaningServiceDecorator):
     def get_cost(self) -> float:
         return self._cleaning_service.get_cost() + self._service_cost
     
+class GrassCuttingService(CleaningServiceDecorator):
+    _service_cost = 5.0
+    _description = 'Grass cutting and arranging. '
+
+    def clean(self) -> str:
+        return f'{self._cleaning_service.clean()}\n- Cutting grass and arranging it $ {self._service_cost}'
+    
+    def get_description(self) -> str:
+        return f"{self._cleaning_service.get_description()}{self._description}"
+
+    def get_cost(self) -> float:
+        return self._cleaning_service.get_cost() + self._service_cost
+    
 # Client Code
 def client_code(client_request: str) -> None:
     clean_service = HouseCleaningService()
@@ -82,14 +95,18 @@ def client_code(client_request: str) -> None:
     if re.search(r'backyard', client_request, re.IGNORECASE):
         clean_service = BackyardCleaningService(clean_service)
 
+    if re.search(r'grass', client_request, re.IGNORECASE):
+        clean_service = GrassCuttingService(clean_service)
+
     print(F'Client: {client_request}')
     print(f"Services: {clean_service.clean()}")
     print(f"Description: {clean_service.get_description()}")
     print(f"Total cost: ${clean_service.get_cost()}")
-    print('\n')
+    print('-' * 50)
 
 if __name__ == "__main__":
-    simple = HouseCleaningService()
+    print('-' * 50)
     client_code(client_request='Only a general cleaning please...')
     client_code(client_request='Clean house, windows and do something with my backyard please...')
     client_code(client_request='I only need my house ordered and swanky, make windows look better please.')
+    client_code(client_request='I have a disaster in my backyard, I want the grass to be shorter please.')
