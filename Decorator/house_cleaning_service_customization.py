@@ -1,3 +1,5 @@
+import re
+
 # Interface
 class CleaningService():
     def clean(self) -> str:
@@ -71,22 +73,23 @@ class BackyardCleaningService(CleaningServiceDecorator):
         return self._cleaning_service.get_cost() + self._service_cost
     
 # Client Code
-def client_code(client_request: str, cleaning_service: CleaningService) -> None:
+def client_code(client_request: str) -> None:
+    clean_service = HouseCleaningService()
+
+    if re.search(r'window', client_request, re.IGNORECASE):
+        clean_service = WindowCleaningService(clean_service)
+
+    if re.search(r'backyard', client_request, re.IGNORECASE):
+        clean_service = BackyardCleaningService(clean_service)
+
     print(F'Client: {client_request}')
-    print(f"Services: {cleaning_service.clean()}")
-    print(f"Description: {cleaning_service.get_description()}")
-    print(f"Total cost: ${cleaning_service.get_cost()}")
+    print(f"Services: {clean_service.clean()}")
+    print(f"Description: {clean_service.get_description()}")
+    print(f"Total cost: ${clean_service.get_cost()}")
     print('\n')
 
 if __name__ == "__main__":
     simple = HouseCleaningService()
-    client_code(client_request='Only a general cleaning please...', cleaning_service=simple)
-
-    house_cleaning = HouseCleaningService()
-    windows_cleaning = WindowCleaningService(house_cleaning)
-    backyard_cleaning = BackyardCleaningService(windows_cleaning)
-    client_code(client_request='Clean house, windows and do something with my backyard please...', cleaning_service=backyard_cleaning)
-
-    clean_house = HouseCleaningService()
-    clean_windows = WindowCleaningService(house_cleaning)
-    client_code(client_request='I only need my house ordered and swanky, make windows look better please.', cleaning_service=clean_windows)
+    client_code(client_request='Only a general cleaning please...')
+    client_code(client_request='Clean house, windows and do something with my backyard please...')
+    client_code(client_request='I only need my house ordered and swanky, make windows look better please.')
